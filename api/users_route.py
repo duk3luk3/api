@@ -175,7 +175,7 @@ def reset_password():
 
         # validate username and email in the database
         cursor.execute("SELECT id FROM `login` WHERE LOWER(`login`) = %s AND LOWER(`email`) = %s",
-                       (name.lower(), email))
+                       (name.lower(), email.lower()))
 
         if cursor.fetchone() is None:
             raise ApiException([Error(ErrorCode.PASSWORD_RESET_FAILED)])
