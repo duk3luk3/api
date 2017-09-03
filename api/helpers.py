@@ -123,10 +123,7 @@ def create_token(action: str, expiry: float, *args) -> str:
     :return: the token as a string that can be decrypted using decrypt_token
     """
 
-    plaintext = action + ',' + str(expiry)
-
-    for param in args:
-        plaintext += "," + str(param)
+    plaintext = json.dumps([action, expiry, args])
 
     request_hmac = Fernet(CRYPTO_KEY).encrypt(plaintext.encode())
     return base64.urlsafe_b64encode(request_hmac).decode("utf-8")
@@ -157,7 +154,7 @@ def decrypt_token(action: str, token: str):
         raise ApiException([Error(ErrorCode.TOKEN_INVALID)])
 
 
-    token_action, expiry, *result = plaintext.split(',')
+    token_action, expiry, result = json.loads(plaintext)
 
     if token_action != action:
         raise ApiException([Error(ErrorCode.TOKEN_INVALID)])
