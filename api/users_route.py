@@ -241,6 +241,7 @@ def validate_password(token=None):
             })
 
         if cursor.rowcount == 0:
+            logger.error('PW Reset validation failed for user %s (e-mail %s) despite valid token', name, email)
             raise ApiException([Error(ErrorCode.PASSWORD_RESET_FAILED)])
 
         return redirect(app.config['PASSWORD_RESET_REDIRECT'])
@@ -564,6 +565,7 @@ def validate_email_request(token=None):
             })
 
         if cursor.rowcount == 0:
+            logger.error('E-Mail reset validation failed for user %s (e-mail %s) despite valid token', userId, email)
             raise ApiException([Error(ErrorCode.EMAIL_CHANGE_FAILED)])
 
     return {"response":"ok"}
