@@ -57,7 +57,7 @@ def create_account():
                                                                                                      datetime.datetime.fromtimestamp(
                                                                                                          expiry)))
 
-    passwordLink = "http://" + config.HOST_NAME + "/users/validate_registration/" + token
+    passwordLink = "https://" + config.HOST_NAME + "/users/validate_registration/" + token
 
     text = "Dear " + name + ",\n\n\
     welcome to the Forged Alliance Forever community.\
@@ -189,7 +189,7 @@ def reset_password():
                                                                                                 datetime.datetime.fromtimestamp(
                                                                                                     expiry)))
 
-    passwordLink = "http://" + config.HOST_NAME + "/users/validate_password/" + token
+    passwordLink = "https://" + config.HOST_NAME + "/users/validate_password/" + token
 
     text = "Dear " + name + ",\n\n\
     a new password was requested for your user.\n\
@@ -511,7 +511,7 @@ def change_email():
                                                                                              datetime.datetime.fromtimestamp(
                                                                                                  expiry)))
 
-    changeLink = "http://" + config.HOST_NAME + "/users/validate_email/" + token
+    changeLink = "https://" + config.HOST_NAME + "/users/validate_email/" + token
 
     with db.connection:
         cursor = db.connection.cursor(db.pymysql.cursors.DictCursor)
