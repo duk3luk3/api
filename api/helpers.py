@@ -88,23 +88,27 @@ def send_email(logger, text, to_name, to_email, subject):
     msg['From'] = email.utils.formataddr(('Forged Alliance Forever', "admin@faforever.com"))
     msg['To'] = email.utils.formataddr((to_name, to_email))
 
-    logger.debug("Sending mail to " + to_email)
-    url = config.MANDRILL_API_URL + "/messages/send-raw.json"
-    headers = {'content-type': 'application/json'}
-    resp = requests.post(url,
-                         data=json.dumps({
-                             "key": config.MANDRILL_API_KEY,
-                             "raw_message": msg.as_string(),
-                             "from_email": 'admin@faforever.com',
-                             "from_name": "Forged Alliance Forever",
-                             "to": [
-                                 to_email
-                             ],
-                             "async": False
-                         }),
-                         headers=headers)
+    if config.MANDRILL_API_KEY:
+        logger.debug("Sending mail to " + to_email)
+        url = config.MANDRILL_API_URL + "/messages/send-raw.json"
+        headers = {'content-type': 'application/json'}
+        resp = requests.post(url,
+                             data=json.dumps({
+                                 "key": config.MANDRILL_API_KEY,
+                                 "raw_message": msg.as_string(),
+                                 "from_email": 'admin@faforever.com',
+                                 "from_name": "Forged Alliance Forever",
+                                 "to": [
+                                     to_email
+                                 ],
+                                 "async": False
+                             }),
+                             headers=headers)
 
-    logger.debug("Mandrill response: %s", json.dumps(resp.text))
+        logger.debug("Mandrill response: %s", json.dumps(resp.text))
+    else:
+        logger.debug("No Mandrill API Key, here's the mail")
+        logger.debug("To: %s Subject: %s\n%s", msg['To'], subject, text)
 
 
 def create_token(action: str, expiry: float, *args) -> str:

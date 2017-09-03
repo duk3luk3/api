@@ -68,10 +68,7 @@ def create_account():
     Thanks,\n\
     -- The FA Forever team"
 
-    if (config.ENVIRONMENT == "testing"):
-        print(passwordLink)
-    else:
-        send_email(logger, text, name, email, 'Forged Alliance Forever - Account validation')
+    send_email(logger, text, name, email, 'Forged Alliance Forever - Account validation')
 
     return {"response":"ok"}
 
@@ -201,10 +198,7 @@ def reset_password():
     Thanks,\n\
     -- The FA Forever team"
 
-    if (config.ENVIRONMENT == "testing"):
-        print(passwordLink)
-    else:
-        send_email(logger, text, name, email, 'Forged Alliance Forever - Password reset')
+    send_email(logger, text, name, email, 'Forged Alliance Forever - Password reset')
 
     return {"response":"ok"}
 
@@ -528,10 +522,7 @@ def change_email():
         Thanks,\n\
         -- The FA Forever team"
 
-        if (config.ENVIRONMENT == "testing"):
-            print(changeLink)
-        else:
-            send_email(logger, text, name, user['email'], 'Forged Alliance Forever - Change of email address')
+        send_email(logger, text, name, user['email'], 'Forged Alliance Forever - Change of email address')
 
     return {"response":"ok"}
 
