@@ -232,6 +232,18 @@ def validate_password(token=None):
 
     with db.connection:
         cursor = db.connection.cursor()
+
+        cursor.execute(
+            "SELECT id FROM `login` WHERE lower(`login`) = %(name)s AND lower(`email`) = %(email)s ",
+            {
+                'name': name.lower(),
+                'email': email.lower()
+            })
+
+        if cursor.rowcount == 0:
+            logger.error('PW Reset validation failed for user %s (e-mail %s) despite valid token', name, email)
+            raise ApiException([Error(ErrorCode.PASSWORD_RESET_FAILED)])
+
         cursor.execute(
             "UPDATE `login` SET `password` = %(password)s WHERE lower(`login`) = %(name)s AND lower(`email`) = %(email)s ",
             {
@@ -239,10 +251,6 @@ def validate_password(token=None):
                 'password': pw_hash,
                 'email': email.lower()
             })
-
-        if cursor.rowcount == 0:
-            logger.error('PW Reset validation failed for user %s (e-mail %s) despite valid token', name, email)
-            raise ApiException([Error(ErrorCode.PASSWORD_RESET_FAILED)])
 
         return redirect(app.config['PASSWORD_RESET_REDIRECT'])
 
@@ -282,6 +290,17 @@ def change_password():
 
     with db.connection:
         cursor = db.connection.cursor()
+
+        cursor.execute(
+            "SELECT id FROM `login` WHERE lower(`login`) = %(name)s AND lower(`password`) = %(pw_hash_old)s ",
+            {
+                'name': name.lower(),
+                'pw_hash_old': pw_hash_old.lower(),
+            })
+
+        if cursor.rowcount == 0:
+            raise ApiException([Error(ErrorCode.PASSWORD_CHANGE_FAILED)])
+
         cursor.execute(
             "UPDATE `login` SET `password` = lower(%(pw_hash_new)s) WHERE lower(`login`) = %(name)s AND lower(`password`) = %(pw_hash_old)s ",
             {
@@ -289,9 +308,6 @@ def change_password():
                 'pw_hash_old': pw_hash_old.lower(),
                 'pw_hash_new': pw_hash_new.lower()
             })
-
-        if cursor.rowcount == 0:
-            raise ApiException([Error(ErrorCode.PASSWORD_CHANGE_FAILED)])
 
     return {"response":"ok"}
 
@@ -557,15 +573,22 @@ def validate_email_request(token=None):
 
     with db.connection:
         cursor = db.connection.cursor()
+
+        cursor.execute(
+            "SELECT id FROM `login` WHERE id = %(userid)s",
+            {
+                'userid': userId,
+            })
+
+        if cursor.rowcount == 0:
+            logger.error('E-Mail reset validation failed for user %s (e-mail %s) despite valid token', userId, email)
+            raise ApiException([Error(ErrorCode.EMAIL_CHANGE_FAILED)])
+
         cursor.execute(
             "UPDATE `login` SET `email` = %(email)s WHERE id = %(userid)s",
             {
                 'userid': userId,
                 'email': email.lower()
             })
-
-        if cursor.rowcount == 0:
-            logger.error('E-Mail reset validation failed for user %s (e-mail %s) despite valid token', userId, email)
-            raise ApiException([Error(ErrorCode.EMAIL_CHANGE_FAILED)])
 
     return {"response":"ok"}
